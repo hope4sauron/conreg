@@ -1,0 +1,25 @@
+services:
+  conreg:
+    container_name: conreg
+    image: registry:latest
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: UAI Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
+      REGISTRY_AUTH_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    volumes:
+      - ./data/auth/registry.password:/auth/registry.password
+      - ./data/warehouse:/data
+    ports:
+      - 5000
+
+  wconreg:
+    container_name: wconreg
+    image: nginx:latest
+    depends_on:
+      - conreg
+    volumes:
+      - ./data/websrv/nginx.conf:/etc/nginx/nginx.conf
+      - ./data/websrv/ssl:/etc/nginx/ssl
+    ports:
+      - "443:443"
